@@ -8,7 +8,6 @@ const initialState: TasksState = {
   newTaskTitle: "",
   loading: false,
   error: false,
-  taskLoading: {},
 };
 
 export const addTask = createAsyncThunk<void, NewTask>(
@@ -30,7 +29,7 @@ export const fetchTasks = createAsyncThunk<TaskFromDB[]>(
         }),
       );
 
-      return tasksArray;
+      return tasksArray.reverse();
     } else {
       return [];
     }

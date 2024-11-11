@@ -5,12 +5,12 @@ import {
   fetchTasks,
   addTask,
   setNewTaskTitle,
-} from "../../slices/taskSlice.ts";
+} from '../../slices/taskSlice.ts';
 import ButtonSpinner from "../UI/ButtonSpinner/ButtonSpinner.tsx";
 
 const TaskForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { newTaskTitle, loading } = useSelector(
+  const { newTaskTitle, loading, error } = useSelector(
     (state: RootState) => state.tasks,
   );
 
@@ -27,9 +27,14 @@ const TaskForm = () => {
         date: new Date().toISOString(),
         isComplete: false,
       };
-      await dispatch(addTask(newTask));
-      dispatch(fetchTasks());
-      dispatch(setNewTaskTitle(""));
+
+      try {
+        await dispatch(addTask(newTask)).unwrap();
+        dispatch(fetchTasks());
+        dispatch(setNewTaskTitle(""));
+      } catch (error) {
+        console.error("Error adding task:", error);
+      }
     }
   };
 
@@ -57,6 +62,11 @@ const TaskForm = () => {
           Add Task {loading && <ButtonSpinner />}
         </button>
       </form>
+      {error && (
+        <div className="alert alert-danger text-center" role="alert">
+          Something went wrong, please try again later.
+        </div>
+      )}
     </div>
   );
 };

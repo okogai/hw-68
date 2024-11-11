@@ -16,5 +16,4 @@ export interface TasksState {
   newTaskTitle: string;
   loading: boolean;
   error: boolean;
-  taskLoading: { [taskId: string]: boolean };
 }
