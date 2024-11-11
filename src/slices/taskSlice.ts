@@ -8,6 +8,7 @@ const initialState: TasksState = {
   newTaskTitle: "",
   loading: false,
   error: false,
+  taskLoading: {}
 };
 
 export const addTask = createAsyncThunk<void, NewTask>(
@@ -41,12 +42,12 @@ export const deleteTask = createAsyncThunk<void, string>('tasks/deleteTask', asy
 export const setTaskStatus = createAsyncThunk<void, string, {state: RootState}>('tasks/setTaskComplete', async (taskId, thunkAPI) => {
   const taskToComplete = thunkAPI.getState().tasks.tasks.find(task => task.id === taskId);
   if (taskToComplete) {
-    const updatedTask = {...taskToComplete, isComplete: true};
+    const updatedTask = {...taskToComplete, isComplete: !taskToComplete.isComplete};
     await axiosAPI.put(`/tasks/${taskId}.json`, updatedTask);
   }
 });
 
-const taskSlice = createSlice({
+export const taskSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
@@ -104,5 +105,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { setNewTaskTitle } = taskSlice.actions;
+export const {setNewTaskTitle} = taskSlice.actions;
 export const TaskReducer = taskSlice.reducer;
