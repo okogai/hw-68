@@ -1,9 +1,9 @@
-import TaskForm from './components/TaskForm/TaskForm.tsx';
+import Tasks from "./containers/Tasks/Tasks.tsx";
 
 const App = () => {
   return (
     <>
-      <TaskForm/>
+      <Tasks />
     </>
   );
 };

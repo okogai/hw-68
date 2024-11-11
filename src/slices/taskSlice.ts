@@ -1,14 +1,14 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axiosAPI from "../axiosAPI.ts";
-import { NewTask, TaskFromDB, TasksState } from '../types';
-import { RootState } from '../app/store.ts';
+import { NewTask, TaskFromDB, TasksState } from "../types";
+import { RootState } from "../app/store.ts";
 
 const initialState: TasksState = {
   tasks: [],
   newTaskTitle: "",
   loading: false,
   error: false,
-  taskLoading: {}
+  taskLoading: {},
 };
 
 export const addTask = createAsyncThunk<void, NewTask>(
@@ -22,27 +22,41 @@ export const fetchTasks = createAsyncThunk<TaskFromDB[]>(
   "tasks/fetchTasks",
   async () => {
     const response = await axiosAPI("/tasks.json");
-    if (response.data){
-      const tasksArray: TaskFromDB[] = Object.keys(response.data).map((key) => ({
-        id: key,
-        ...response.data[key],
-      }));
+    if (response.data) {
+      const tasksArray: TaskFromDB[] = Object.keys(response.data).map(
+        (key) => ({
+          id: key,
+          ...response.data[key],
+        }),
+      );
 
       return tasksArray;
     } else {
       return [];
     }
-  }
+  },
 );
 
-export const deleteTask = createAsyncThunk<void, string>('tasks/deleteTask', async (taskId) => {
-  await axiosAPI.delete(`/tasks/${taskId}.json`);
-});
+export const deleteTask = createAsyncThunk<void, string>(
+  "tasks/deleteTask",
+  async (taskId) => {
+    await axiosAPI.delete(`/tasks/${taskId}.json`);
+  },
+);
 
-export const setTaskStatus = createAsyncThunk<void, string, {state: RootState}>('tasks/setTaskComplete', async (taskId, thunkAPI) => {
-  const taskToComplete = thunkAPI.getState().tasks.tasks.find(task => task.id === taskId);
+export const setTaskStatus = createAsyncThunk<
+  void,
+  string,
+  { state: RootState }
+>("tasks/setTaskComplete", async (taskId, thunkAPI) => {
+  const taskToComplete = thunkAPI
+    .getState()
+    .tasks.tasks.find((task) => task.id === taskId);
   if (taskToComplete) {
-    const updatedTask = {...taskToComplete, isComplete: !taskToComplete.isComplete};
+    const updatedTask = {
+      ...taskToComplete,
+      isComplete: !taskToComplete.isComplete,
+    };
     await axiosAPI.put(`/tasks/${taskId}.json`, updatedTask);
   }
 });
@@ -72,17 +86,20 @@ export const taskSlice = createSlice({
         state.loading = true;
         state.error = false;
       })
-      .addCase(fetchTasks.fulfilled, (state, action: PayloadAction<TaskFromDB[]>) => {
-        state.loading = false;
-        state.tasks = action.payload;
-      })
+      .addCase(
+        fetchTasks.fulfilled,
+        (state, action: PayloadAction<TaskFromDB[]>) => {
+          state.loading = false;
+          state.tasks = action.payload;
+        },
+      )
       .addCase(fetchTasks.rejected, (state) => {
         state.loading = false;
         state.error = true;
       })
       .addCase(deleteTask.pending, (state) => {
-      state.loading = true;
-      state.error = false;
+        state.loading = true;
+        state.error = false;
       })
       .addCase(deleteTask.fulfilled, (state) => {
         state.loading = false;
@@ -101,9 +118,9 @@ export const taskSlice = createSlice({
       .addCase(setTaskStatus.rejected, (state) => {
         state.loading = false;
         state.error = true;
-      })
+      });
   },
 });
 
-export const {setNewTaskTitle} = taskSlice.actions;
+export const { setNewTaskTitle } = taskSlice.actions;
 export const TaskReducer = taskSlice.reducer;

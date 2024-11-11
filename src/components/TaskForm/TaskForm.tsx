@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../app/store.ts';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../app/store.ts";
 import {
   fetchTasks,
   addTask,
   setNewTaskTitle,
-} from '../../slices/taskSlice.ts';
-import Spinner from '../UI/Spinner/Spinner.tsx';
-import ButtonSpinner from '../UI/ButtonSpinner/ButtonSpinner.tsx';
+} from "../../slices/taskSlice.ts";
+import ButtonSpinner from "../UI/ButtonSpinner/ButtonSpinner.tsx";
 
 const TaskForm = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { newTaskTitle, loading } = useSelector((state: RootState) => state.tasks);
+  const { newTaskTitle, loading } = useSelector(
+    (state: RootState) => state.tasks,
+  );
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -28,7 +29,7 @@ const TaskForm = () => {
       };
       await dispatch(addTask(newTask));
       dispatch(fetchTasks());
-      dispatch(setNewTaskTitle(''));
+      dispatch(setNewTaskTitle(""));
     }
   };
 
@@ -38,8 +39,6 @@ const TaskForm = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">TODO List</h1>
-
       <form onSubmit={handleAddTask} className="mb-4">
         <div className="mb-3">
           <label htmlFor="newTaskTitle" className="form-label">
@@ -55,8 +54,7 @@ const TaskForm = () => {
           />
         </div>
         <button type="submit" className="btn btn-primary">
-          Add Task {loading && <ButtonSpinner/>
-          }
+          Add Task {loading && <ButtonSpinner />}
         </button>
       </form>
     </div>
